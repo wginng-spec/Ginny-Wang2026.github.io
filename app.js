@@ -19,7 +19,7 @@ var CONTENT = {
     hi: 'hi，这里是',
     stickers: ['外贸打工人', '单据核对狂', 'AI 上头选手'],
     shout: '终于把这玩意儿从 0 到 1 搭出来了。学经济统计，现在做汽车零部件外贸售后，每天和 PI、装箱单、发货清单打架。',
-    chips: ['2026 届', '安徽大学', '芜湖', 'GPA 3.68'],
+    chips: ['2026 届', '安徽大学', '芜湖禾田', '芜湖', 'GPA 3.68'],
     marquee: ['订单核对到眼花', '发货差一件就爆炸', '用 AI 偷懒中', 'EXCEL 是我的第二大脑'],
     nav: { about: '关于', exp: '经历', works: '作品', skills: '技能', contact: '联系' },
     sections: {
@@ -102,7 +102,7 @@ var CONTENT = {
     hi: 'hi, this is',
     stickers: ['Trade desk', 'List-checker', 'AI enthusiast'],
     shout: 'Finally shipped this thing from 0 to 1. I studied economic statistics and now work in after-sales for auto-parts export — wrestling PIs, packing lists and shipping sheets every day.',
-    chips: ['Class of 2026', 'Anhui University', 'Wuhu', 'GPA 3.68'],
+    chips: ['Class of 2026', 'Anhui University', 'Hetian Wuhu', 'Wuhu', 'GPA 3.68'],
     marquee: ['Eyes burnt from checking lists', 'One piece short and it explodes', 'Automating with AI', 'Excel is my second brain'],
     nav: { about: 'About', exp: 'Experience', works: 'Work', skills: 'Skills', contact: 'Contact' },
     sections: {
@@ -174,7 +174,7 @@ var CONTENT = {
 /* ---------------- 状态 ---------------- */
 
 var PALETTES = ['lemon', 'peach', 'mint', 'violet'];
-var state = { skin: 'minimal', lang: 'zh', theme: 'lemon', photo: 'id' };
+var state = { skin: 'minimal', lang: 'zh', theme: 'lemon', photo: 'id', mask: 'mystery' };
 
 function readStore(key) { try { return localStorage.getItem(key); } catch (e) { return null; } }
 function writeStore(key, val) { try { localStorage.setItem(key, val); } catch (e) {} }
@@ -189,6 +189,8 @@ function writeStore(key, val) { try { localStorage.setItem(key, val); } catch (e
   if (PALETTES.indexOf(theme) >= 0) state.theme = theme;
   var photo = q.get('photo');
   if (photo === 'life' || photo === 'id') state.photo = photo;
+  var mask = q.get('mask') || readStore('wb-cover');
+  if (mask === 'mystery' || mask === 'on' || mask === 'off') state.mask = mask;
 })();
 
 /* ---------------- 渲染：极简风 ---------------- */
@@ -229,9 +231,11 @@ function renderMinimal(t) {
   '<div class="m-page">' +
     '<section class="m-profile m-card">' +
       '<div class="m-photo-col">' +
-        '<figure class="m-portrait">' +
+        '<figure class="m-portrait" title="' + (state.lang === 'zh' ? '点一下：神秘 → 戴墨镜 → 真容' : 'Click: mystery → sunglasses → photo') + '">' +
           '<span class="m-monogram">汪</span>' +
           '<img class="m-photo" src="photo-' + state.photo + '.jpg" alt="' + t.name + '" onerror="this.remove()">' +
+          '<span class="m-mask" aria-hidden="true"></span>' +
+          '<span class="m-cover" aria-hidden="true"><span class="m-cover-text">' + (state.lang === 'zh' ? '神秘' : 'Mystery') + '</span></span>' +
         '</figure>' +
         '<div class="m-photo-switch">' +
           '<button data-photo="id" class="' + (state.photo === 'id' ? 'on' : '') + '">' + (state.lang === 'zh' ? '证件照' : 'Formal') + '</button>' +
@@ -309,7 +313,203 @@ function renderMinimal(t) {
   '</div>';
 }
 
+/* ---------------- 多巴胺风：我的 Q 版形象 ---------------- */
+
+var MY_FIGURE = (function () {
+  var C = {
+    skin: '#ffdfcb',
+    skinD: '#e8b696',
+    hair: '#7b4a29',
+    hairL: '#96603a',
+    green: '#69d24a',
+    greenD: '#48a52c',
+    ink: '#1b1712',
+    red: '#ff4d2e',
+    blue: '#2f5bff',
+    white: '#fffdf5'
+  };
+
+  function eyes(mood) {
+    if (mood === 'think') {
+      return '' +
+        '<path d="M36 64q9 4 18-1" fill="none" stroke="' + C.ink + '" stroke-width="3" stroke-linecap="round"/>' +
+        '<path d="M66 63q9 5 18 1" fill="none" stroke="' + C.ink + '" stroke-width="3" stroke-linecap="round"/>' +
+        '<circle cx="45" cy="67" r="1.9" fill="' + C.ink + '"/>' +
+        '<circle cx="75" cy="67" r="1.9" fill="' + C.ink + '"/>';
+    }
+    if (mood === 'grin') {
+      return '' +
+        '<path d="M37 67q9-13 18 0" fill="none" stroke="' + C.ink + '" stroke-width="3.2" stroke-linecap="round"/>' +
+        '<path d="M65 67q9-13 18 0" fill="none" stroke="' + C.ink + '" stroke-width="3.2" stroke-linecap="round"/>';
+    }
+    return '' +
+      '<ellipse cx="46" cy="63" rx="8.8" ry="9.6" fill="' + C.white + '"/>' +
+      '<ellipse cx="74" cy="63" rx="8.8" ry="9.6" fill="' + C.white + '"/>' +
+      '<circle cx="46.8" cy="64" r="5.6" fill="#3a2a1f"/>' +
+      '<circle cx="74.8" cy="64" r="5.6" fill="#3a2a1f"/>' +
+      '<circle cx="49" cy="61" r="1.9" fill="' + C.white + '"/>' +
+      '<circle cx="77" cy="61" r="1.9" fill="' + C.white + '"/>' +
+      '<path d="M38 54.5q8-4.5 16 0" fill="none" stroke="' + C.ink + '" stroke-width="2.6" stroke-linecap="round"/>' +
+      '<path d="M66 54.5q8-4.5 16 0" fill="none" stroke="' + C.ink + '" stroke-width="2.6" stroke-linecap="round"/>';
+  }
+
+  function mouth(mood) {
+    if (mood === 'grin') {
+      return '<path d="M52 80q8 10 16 0q-8 4.5-16 0Z" fill="' + C.ink + '"/>' +
+             '<path d="M55 81.4q5 3.4 10 0" fill="' + C.white + '"/>';
+    }
+    if (mood === 'think') {
+      return '<path d="M56 82h8" stroke="#c9603f" stroke-width="2.6" stroke-linecap="round"/>';
+    }
+    return '<path d="M53.5 80q6.5 7 13 0" fill="none" stroke="#c9603f" stroke-width="2.6" stroke-linecap="round"/>';
+  }
+
+  function head(mood) {
+    var freck = '';
+    [[37, 75], [42, 78], [34, 79], [83, 75], [78, 78], [86, 79]].forEach(function (p) {
+      freck += '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="1.35" fill="#e5a184"/>';
+    });
+    return '' +
+      '<path d="M54 82h12v16H54z" fill="' + C.skinD + '"/>' +
+      '<ellipse cx="60" cy="59" rx="34" ry="33" fill="' + C.skin + '"/>' +
+      '<ellipse cx="34.5" cy="71" rx="5.6" ry="3.2" fill="#ff9f86" opacity="0.45"/>' +
+      '<ellipse cx="85.5" cy="71" rx="5.6" ry="3.2" fill="#ff9f86" opacity="0.45"/>' +
+      eyes(mood) + freck + mouth(mood) +
+      '<g fill="none" stroke="' + C.ink + '" stroke-width="2.8">' +
+        '<circle cx="46" cy="63" r="13.1"/>' +
+        '<circle cx="74" cy="63" r="13.1"/>' +
+        '<path d="M58.4 62.4h3.2" stroke-linecap="round"/>' +
+        '<path d="M32.8 59l-6.4-3" stroke-linecap="round"/>' +
+        '<path d="M87.2 59l6.4-3" stroke-linecap="round"/>' +
+      '</g>';
+  }
+
+  function hairFront() {
+    return '' +
+      '<path d="M26 58C26 30 41 15 60 15s34 15 34 43c-1.6-10-9.6-16.6-19.6-15.2-6.2.9-11.2 4.8-14.4 10.2-3.2-5.4-8.2-9.3-14.4-10.2C35.6 41.4 27.6 48 26 58Z" fill="' + C.hair + '"/>' +
+'';
+  }
+
+  function hairBack() {
+    return '' +
+      '<path d="M60 4C33 4 16 25 16 60c0 20-1 38-3 54h16V62h62v52h16c-2-16-3-34-3-54C104 25 87 4 60 4Z" fill="' + C.hair + '"/>';
+  }
+
+  function shoulders() {
+    return '' +
+      '<path d="M60 88c-19 0-33 5-39 14-3.6 5-5 11-5 17v13h88v-13c0-6-1.4-12-5-17-6-9-20-14-39-14Z" fill="' + C.green + '"/>' +
+      '<path d="M21 102c7-9 21-14 39-14s32 5 39 14c-4.6-3.2-10.6-4.8-16.6-3.6-6.6 1.4-12 5.4-18.4 11.4-6.4-6-11.8-10-18.4-11.4C35.6 96.2 29.6 97.8 25 101Z" fill="' + C.greenD + '"/>';
+  }
+
+  function hand(cx, cy, r) {
+    return '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="' + C.skin + '" stroke="' + C.ink + '" stroke-width="2.4"/>';
+  }
+
+  var POSES = {
+    about: function () {
+      return '' +
+        '<path d="M104 130q6-16 2-30" fill="none" stroke="' + C.skin + '" stroke-width="12" stroke-linecap="round"/>' +
+        '<g transform="rotate(-12 104 84)">' +
+          '<rect x="97" y="72" width="15" height="20" rx="7.5" fill="' + C.skin + '" stroke="' + C.ink + '" stroke-width="2.4"/>' +
+          '<rect x="99.5" y="64" width="4.4" height="12" rx="2.2" fill="' + C.skin + '" stroke="' + C.ink + '" stroke-width="2"/>' +
+          '<rect x="105.5" y="65" width="4.4" height="11" rx="2.2" fill="' + C.skin + '" stroke="' + C.ink + '" stroke-width="2"/>' +
+        '</g>' +
+        '<path d="M107 54c0-3.4-4.6-5.2-6.6-2.4-2-2.8-6.6-1-6.6 2.4 0 4 6.6 7.8 6.6 7.8s6.6-3.8 6.6-7.8Z" fill="' + C.red + '" stroke="' + C.ink + '" stroke-width="2.4"/>';
+    },
+    exp: function () {
+      return '' +
+        '<path d="M22 130q-4-16 6-24" fill="none" stroke="' + C.skin + '" stroke-width="12" stroke-linecap="round"/>' +
+        '<path d="M40 100q-6-8-4-16" fill="none" stroke="' + C.skin + '" stroke-width="12" stroke-linecap="round"/>' +
+        hand(38, 78, 7.2) +
+        '<g transform="translate(72,86) rotate(8)">' +
+          '<rect x="0" y="0" width="30" height="38" rx="4" fill="' + C.red + '" stroke="' + C.ink + '" stroke-width="2.6"/>' +
+          '<path d="M6 9h18M6 17h18M6 25h11" stroke="' + C.white + '" stroke-width="2.6" stroke-linecap="round"/>' +
+        '</g>' +
+        '<path d="M96 130q6-10 4-20" fill="none" stroke="' + C.skin + '" stroke-width="12" stroke-linecap="round"/>' +
+        hand(99, 104, 7) +
+        '<path d="M20 32l3 7 7 3-7 3-3 7-3-7-7-3 7-3Z" fill="' + C.blue + '" stroke="' + C.ink + '" stroke-width="1.6"/>';
+    },
+    works: function () {
+      return '' +
+        '<path d="M20 130q-2-14 6-22" fill="none" stroke="' + C.skin + '" stroke-width="12" stroke-linecap="round"/>' +
+        '<path d="M100 130q2-14-6-22" fill="none" stroke="' + C.skin + '" stroke-width="12" stroke-linecap="round"/>' +
+        '<g transform="translate(30,96) rotate(-4)">' +
+          '<rect x="0" y="0" width="60" height="38" rx="5" fill="' + C.blue + '" stroke="' + C.ink + '" stroke-width="2.8"/>' +
+          '<rect x="5" y="5" width="50" height="28" rx="2.5" fill="' + C.white + '"/>' +
+          '<path d="M11 13h18M11 20h28M11 27h14" stroke="' + C.blue + '" stroke-width="2.6" stroke-linecap="round"/>' +
+        '</g>' +
+        hand(28, 108, 7.4) +
+        hand(92, 108, 7.4);
+    },
+    skills: function () {
+      return '' +
+        '<path d="M22 130q-2-14 8-20" fill="none" stroke="' + C.skin + '" stroke-width="12" stroke-linecap="round"/>' +
+        '<path d="M98 130q2-14-8-20" fill="none" stroke="' + C.skin + '" stroke-width="12" stroke-linecap="round"/>' +
+        '<g transform="translate(28,98)">' +
+          '<rect x="2" y="30" width="60" height="11" rx="3" fill="' + C.ink + '"/>' +
+          '<rect x="7" y="0" width="50" height="34" rx="3" fill="' + C.white + '" stroke="' + C.ink + '" stroke-width="2.6"/>' +
+          '<path d="M14 9h16M14 17h24M14 25h11" stroke="' + C.green + '" stroke-width="2.8" stroke-linecap="round"/>' +
+        '</g>' +
+        hand(26, 106, 7.2) +
+        hand(94, 106, 7.2) +
+        '<path d="M16 44l2.6 6 6 2.6-6 2.6-2.6 6-2.6-6-6-2.6 6-2.6Z" fill="' + C.red + '" stroke="' + C.ink + '" stroke-width="1.5"/>';
+    },
+    contact: function () {
+      return '' +
+        '<path d="M104 130q4-18 0-32" fill="none" stroke="' + C.skin + '" stroke-width="12" stroke-linecap="round"/>' +
+        '<g transform="rotate(14 102 82)">' +
+          '<rect x="95" y="74" width="16" height="18" rx="8" fill="' + C.skin + '" stroke="' + C.ink + '" stroke-width="2.4"/>' +
+          '<rect x="97" y="60" width="4.6" height="16" rx="2.3" fill="' + C.skin + '" stroke="' + C.ink + '" stroke-width="2"/>' +
+          '<rect x="104" y="63" width="4.6" height="13" rx="2.3" fill="' + C.skin + '" stroke="' + C.ink + '" stroke-width="2"/>' +
+        '</g>' +
+        '<path d="M18 130q-6-14-2-26" fill="none" stroke="' + C.skin + '" stroke-width="12" stroke-linecap="round"/>' +
+        '<g transform="translate(6,92) rotate(-10)">' +
+          '<rect x="0" y="0" width="34" height="22" rx="3" fill="' + C.white + '" stroke="' + C.ink + '" stroke-width="2.6"/>' +
+          '<path d="M5 8h16M5 14h10" stroke="' + C.ink + '" stroke-width="2.4" stroke-linecap="round"/>' +
+        '</g>' +
+        '<path d="M22 58c0-3.6-4.8-5.4-6.8-2.5C13.2 52.6 8.4 54.4 8.4 58c0 4.2 6.8 8.2 6.8 8.2s6.8-4 6.8-8.2Z" fill="' + C.red + '" stroke="' + C.ink + '" stroke-width="2.4"/>';
+    }
+  };
+
+  var MOOD = { about: 'smile', exp: 'think', works: 'smile', skills: 'smile', contact: 'grin' };
+
+  return function (pose) {
+    return '' +
+      '<svg class="p-me-svg" viewBox="0 0 120 132" role="img" aria-label="">' +
+        hairBack() +
+        shoulders() +
+        (POSES[pose] ? POSES[pose]() : '') +
+        head(MOOD[pose] || 'smile') +
+        hairFront() +
+      '</svg>';
+  };
+})();
+
+/* 五个页面对应的「我」的 Q 版形象图（豆包生成，已抠成透明底） */
+var ME_IMG = {
+  about: 'me-about.webp',
+  exp: 'me-exp.webp',
+  works: 'me-works.webp',
+  skills: 'me-skills.webp',
+  contact: 'me-contact.webp'
+};
+
+function myFigure(pose) {
+  return '<img class="p-me-img" data-pose="' + pose + '" src="' +
+    (ME_IMG[pose] || '') + '" alt="" decoding="async">';
+}
+
+/* 图片缺失时自动退回矢量版，保证页面不缺图 */
+document.addEventListener('error', function (e) {
+  var img = e.target;
+  if (!img || !img.classList || !img.classList.contains('p-me-img')) return;
+  var holder = document.createElement('div');
+  holder.innerHTML = MY_FIGURE(img.getAttribute('data-pose'));
+  if (holder.firstChild) img.replaceWith(holder.firstChild);
+}, true);
+
 /* ---------------- 渲染：多巴胺风 ---------------- */
+
 
 function renderPop(t) {
   var tabs = ['about', 'exp', 'works', 'skills', 'contact'].map(function (k, i) {
@@ -353,52 +553,69 @@ function renderPop(t) {
 
     '<main class="p-panels">' +
       '<section class="p-panel on" data-panel="about">' +
-        '<div class="p-inner">' +
-          '<div class="p-stickers">' + stickers + '</div>' +
-          '<p class="p-shout">' + t.shout + '</p>' +
-          '<div class="p-grid2">' +
-            '<div class="p-card">' +
-              '<h3>' + t.aboutTitle + '</h3>' +
-              t.about.map(function (p) { return '<p>' + p + '</p>'; }).join('') +
-            '</div>' +
-            '<div class="p-card p-accent">' +
-              '<h3>' + (state.lang === 'zh' ? '信条' : 'Creed') + '</h3>' +
-              '<p class="p-quote">' + t.creed + '</p>' +
-              '<div class="p-chips">' + t.chips.map(function (c) { return '<span class="p-chip">' + c + '</span>'; }).join('') + '</div>' +
-            '</div>' +
+        '<div class="p-inner p-inner-about">' +
+          '<div class="p-intro">' +
+            '<div class="p-me p-me-about">' + myFigure('about') + '</div>' +
+            '<div class="p-stickers">' + stickers + '</div>' +
+            '<p class="p-shout">' + t.shout + '</p>' +
           '</div>' +
-          '<div class="p-marquee"><div class="p-marquee-track">' + marquee + '</div></div>' +
+          '<div class="p-body p-about-cards">' +
+            '<div class="p-grid2">' +
+              '<div class="p-card">' +
+                '<h3>' + t.aboutTitle + '</h3>' +
+                t.about.map(function (p) { return '<p>' + p + '</p>'; }).join('') +
+              '</div>' +
+              '<div class="p-card p-accent">' +
+                '<h3>' + (state.lang === 'zh' ? '信条' : 'Creed') + '</h3>' +
+                '<p class="p-quote">' + t.creed + '</p>' +
+                '<div class="p-chips">' + t.chips.map(function (c) { return '<span class="p-chip">' + c + '</span>'; }).join('') + '</div>' +
+              '</div>' +
+            '</div>' +
+            '<div class="p-marquee"><div class="p-marquee-track">' + marquee + '</div></div>' +
+          '</div>' +
         '</div>' +
       '</section>' +
 
       '<section class="p-panel" data-panel="exp">' +
-        '<div class="p-inner"><div class="p-cols3">' + expCards + '</div></div>' +
+        '<div class="p-inner">' +
+          '<div class="p-body"><div class="p-cols3">' + expCards + '</div></div>' +
+          '<div class="p-me p-me-exp">' + myFigure('exp') + '</div>' +
+        '</div>' +
       '</section>' +
 
       '<section class="p-panel" data-panel="works">' +
-        '<div class="p-inner"><div class="p-grid2 p-works">' + workCards + '</div></div>' +
+        '<div class="p-inner">' +
+          '<div class="p-body"><div class="p-grid2 p-works">' + workCards + '</div></div>' +
+          '<div class="p-me p-me-works">' + myFigure('works') + '</div>' +
+        '</div>' +
       '</section>' +
 
       '<section class="p-panel" data-panel="skills">' +
         '<div class="p-inner">' +
-          '<div class="p-card">' + t.skills.map(function (s) {
-            return '<div class="p-skill"><span class="p-skill-name">' + s[0] + '</span><span class="p-skill-val">' + s[1] + '</span></div>';
-          }).join('') + '</div>' +
-          '<div class="p-card p-school">' +
-            '<h3>' + t.edu.school + '</h3>' +
-            '<p class="p-org">' + t.edu.meta + '</p>' +
-            '<p>' + t.edu.points[1] + '</p>' +
+          '<div class="p-body">' +
+            '<div class="p-card">' + t.skills.map(function (s) {
+              return '<div class="p-skill"><span class="p-skill-name">' + s[0] + '</span><span class="p-skill-val">' + s[1] + '</span></div>';
+            }).join('') + '</div>' +
+            '<div class="p-card p-school">' +
+              '<h3>' + t.edu.school + '</h3>' +
+              '<p class="p-org">' + t.edu.meta + '</p>' +
+              '<p>' + t.edu.points[1] + '</p>' +
+            '</div>' +
           '</div>' +
+          '<div class="p-me p-me-skills">' + myFigure('skills') + '</div>' +
         '</div>' +
       '</section>' +
 
       '<section class="p-panel" data-panel="contact">' +
         '<div class="p-inner">' +
-          '<div class="p-card p-contact">' +
-            '<p class="p-contact-line">' + t.contactText + '</p>' +
-            '<a class="p-mail" href="mailto:' + t.email + '">' + t.email + '</a>' +
-            '<p class="p-loc">' + t.loc + '</p>' +
+          '<div class="p-body">' +
+            '<div class="p-card p-contact">' +
+              '<p class="p-contact-line">' + t.contactText + '</p>' +
+              '<a class="p-mail" href="mailto:' + t.email + '">' + t.email + '</a>' +
+              '<p class="p-loc">' + t.loc + '</p>' +
+            '</div>' +
           '</div>' +
+          '<div class="p-me p-me-contact">' + myFigure('contact') + '</div>' +
         '</div>' +
       '</section>' +
     '</main>' +
@@ -425,6 +642,8 @@ function render() {
   } else {
     bindAnchorScroll();
     bindPhotoSwitch();
+    bindPhotoStateToggle();
+    syncPhotoState();
   }
   syncControls();
 }
@@ -451,8 +670,56 @@ function bindPhotoSwitch() {
     b.addEventListener('click', function () {
       state.photo = b.dataset.photo;
       if (img) img.src = 'photo-' + state.photo + '.jpg';
+      syncPhotoState();
       buttons.forEach(function (x) { x.classList.toggle('on', x === b); });
     });
+  });
+}
+
+/* 证件照三态：神秘（白底竖排封面）→ 戴墨镜 → 真容，点击照片循环 */
+function syncPhotoState() {
+  var figure = app.querySelector('.m-portrait');
+  if (!figure) return;
+  var cover = figure.querySelector('.m-cover');
+  var mask = figure.querySelector('.m-mask');
+  if (state.photo !== 'id') {
+    if (cover) cover.style.display = 'none';
+    if (mask) mask.style.display = 'none';
+    return;
+  }
+  if (!mask) {
+    mask = document.createElement('span');
+    mask.className = 'm-mask';
+    mask.setAttribute('aria-hidden', 'true');
+    figure.appendChild(mask);
+  }
+  if (!cover) {
+    cover = document.createElement('span');
+    cover.className = 'm-cover';
+    cover.setAttribute('aria-hidden', 'true');
+    cover.innerHTML = '<span class="m-cover-text">' + (state.lang === 'zh' ? '神秘' : 'Mystery') + '</span>';
+    figure.appendChild(cover);
+  }
+  cover.style.display = '';
+  cover.classList.toggle('off', state.mask !== 'mystery');
+  mask.style.display = '';
+  mask.classList.toggle('off', state.mask !== 'on');
+  var tips = {
+    mystery: state.lang === 'zh' ? '点一下：揭晓戴墨镜的照片' : 'Click: reveal the photo with sunglasses',
+    on: state.lang === 'zh' ? '点一下：摘下墨镜' : 'Click: take off the sunglasses',
+    off: state.lang === 'zh' ? '点一下：恢复神秘' : 'Click: back to mystery'
+  };
+  figure.setAttribute('title', tips[state.mask]);
+}
+
+function bindPhotoStateToggle() {
+  var figure = app.querySelector('.m-portrait');
+  if (!figure) return;
+  figure.addEventListener('click', function () {
+    if (state.photo !== 'id') return;
+    state.mask = state.mask === 'mystery' ? 'on' : (state.mask === 'on' ? 'off' : 'mystery');
+    writeStore('wb-cover', state.mask);
+    syncPhotoState();
   });
 }
 

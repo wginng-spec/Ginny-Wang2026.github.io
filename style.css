@@ -266,6 +266,94 @@ body {
   color: #c6b9a5;
 }
 
+/* 墨镜与神秘封面：点击照片循环 神秘 → 戴墨镜 → 真容 */
+.m-portrait { cursor: pointer; }
+
+/* 白底竖排"神秘"封面，盖住整张证件照 */
+.m-cover {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  transition: opacity 0.25s ease;
+  pointer-events: none;
+}
+
+.m-cover-text {
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+  font-family: var(--serif);
+  font-size: 30px;
+  letter-spacing: 0.35em;
+  color: #b9b2a6;
+}
+
+/* 英文版「Mystery」比中文长得多，竖排会冲出封面：改成旋转竖排并缩小 */
+html[lang="en"] .m-cover-text {
+  text-orientation: mixed;
+  font-size: 20px;
+  letter-spacing: 0.22em;
+}
+
+.m-cover.off { opacity: 0; }
+
+/* 墨镜：大方框，外圆内方、双片相连，点击照片可摘下 */
+.m-mask {
+  position: absolute;
+  left: 27%;
+  right: 27%;
+  top: 29%;
+  height: 11.4%;
+  z-index: 2;
+  background-image: linear-gradient(#14181f, #14181f);
+  background-size: 10% 52%;
+  background-position: 50% 50%;
+  background-repeat: no-repeat;
+  transition: opacity 0.22s ease, transform 0.22s ease;
+  pointer-events: none;
+}
+
+.m-mask::before,
+.m-mask::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  width: 47%;
+  height: 100%;
+  background-color: #14181f;
+  background-image: linear-gradient(
+    116deg,
+    rgba(255, 255, 255, 0) 24%,
+    rgba(255, 255, 255, 0.34) 32%,
+    rgba(255, 255, 255, 0.06) 40%,
+    rgba(255, 255, 255, 0) 50%,
+    rgba(255, 255, 255, 0.12) 66%,
+    rgba(255, 255, 255, 0) 74%
+  );
+  box-shadow:
+    inset 0 0 0 1.2px #05060a,
+    inset 0 1.5px 0 rgba(255, 255, 255, 0.26),
+    0 2px 6px rgba(0, 0, 0, 0.28);
+}
+
+.m-mask::before {
+  left: 0;
+  border-radius: 34% 5% 5% 40% / 32% 8% 14% 48%;
+}
+
+.m-mask::after {
+  right: 0;
+  border-radius: 5% 34% 40% 5% / 8% 32% 48% 14%;
+}
+
+.m-mask.off {
+  opacity: 0;
+  transform: translateY(8px) scale(0.94);
+}
+
 .m-profile h1 {
   margin: 0;
   font-family: var(--serif);
@@ -530,7 +618,94 @@ body {
   to { opacity: 1; transform: translateY(0); }
 }
 
-.p-inner { width: 100%; margin: auto 0; padding-bottom: 6px; }
+/* 左侧内容 + 右侧 Q 版形象（形象独占一列，永不压住文字） */
+.p-inner {
+  width: 100%;
+  margin: auto 0;
+  padding-bottom: 6px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 152px;
+  gap: 20px;
+  align-items: start;
+}
+
+.p-body { min-width: 0; }
+
+.p-me {
+  justify-self: end;
+  align-self: start;
+  width: 100%;
+  max-width: 152px;
+}
+
+/* 关于页：人物浮在内容区右上，正文绕排，卡片整体下移到人物下方 */
+.p-inner-about { display: block; }
+
+.p-inner-about .p-me {
+  float: right;
+  width: 156px;
+  max-width: 40%;
+  margin: 0 0 6px 22px;
+}
+
+/* 正文在人物旁边垂直居中一些，避免左侧留出一条空洞 */
+.p-inner-about .p-intro { padding-top: 26px; }
+
+.p-inner-about .p-about-cards {
+  clear: both;
+  padding-top: 10px;
+}
+
+
+.p-me-svg,
+.p-me-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  animation: p-float 5.2s ease-in-out infinite;
+}
+
+.p-me-img { filter: drop-shadow(0 6px 10px rgba(27, 23, 18, 0.18)); }
+
+/* 中等宽度：缩一档，仍然并排 */
+@media (max-width: 1180px) {
+  .p-inner { grid-template-columns: minmax(0, 1fr) 118px; gap: 16px; }
+  .p-me { max-width: 118px; }
+}
+
+/* 再窄：继续缩，但保持并排（预览面板通常就在这个区间） */
+@media (max-width: 900px) {
+  .p-inner { grid-template-columns: minmax(0, 1fr) 96px; gap: 12px; }
+  .p-me { max-width: 96px; align-self: start; }
+  .p-inner-about .p-me { width: 96px; margin: 0 0 8px 14px; }
+}
+
+/* 手机：单列，人缩小收到内容下方右侧，像落款，不再占顶部空间 */
+@media (max-width: 700px) {
+  .p-inner {
+    grid-template-columns: 1fr;
+    gap: 6px;
+    align-items: start;
+  }
+  .p-inner-about .p-me { float: none; width: 84px; margin: 0 0 8px auto; }
+  .p-me {
+    order: -1;
+    justify-self: end;
+    align-self: start;
+    max-width: 76px;
+    padding-bottom: 0;
+  }
+}
+
+@keyframes p-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .p-me-svg, .p-me-img { animation: none; }
+}
+
 
 .p-stickers { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
 
